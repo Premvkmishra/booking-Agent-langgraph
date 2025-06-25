@@ -177,7 +177,8 @@ with st.form(key="wa_input_form", clear_on_submit=True):
 if st.session_state.waiting:
     with st.spinner("Agent is typing..."):
         try:
-            response = requests.post("http://localhost:8000/chat", json={"message": st.session_state.messages[-1]["content"]}).json()
+            BACKEND_URL = "https://booking-agent-langgraph.onrender.com"
+            response = requests.post(f"{BACKEND_URL}/chat", json={"message": st.session_state.messages[-1]["content"]}).json()
             status = response.get("status", "")
             alt_slots = response.get("alternative_slots", [])
             st.session_state.messages.append({"role": "agent", "content": response["response"], "status": status, "alt_slots": alt_slots})
@@ -189,7 +190,8 @@ if st.session_state.waiting:
 # --- Show all bookings ---
 with st.expander("Show all current bookings"):
     try:
-        bookings = requests.get("http://localhost:8000/calendar").json()
+        BACKEND_URL = "https://booking-agent-langgraph.onrender.com"
+        bookings = requests.get(f"{BACKEND_URL}/calendar").json()
         if bookings:
             for b in bookings:
                 st.write(f"{b['date']} {b['start']}-{b['end']}: {b.get('summary', '')}")
